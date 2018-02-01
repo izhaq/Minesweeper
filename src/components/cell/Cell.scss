@@ -1,0 +1,25 @@
+.Cell {
+    display: flex;
+    height: 40px;
+    min-width: 40px;
+    justify-content: center;
+    align-items: center;
+    margin: 1px;
+    background-color: #61dafb;
+    border-right: 1px solid #222;
+    border-radius: 10px;
+    font-size: 12px;
+
+    &.revealed{
+        background-color: white;
+
+        &.bomb{
+            background-color: red;
+        }
+    }
+}
+
+.Cell:last-child {
+    border-right: none;
+}
+

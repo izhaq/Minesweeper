@@ -1,0 +1,39 @@
+.User-choice{
+    display: flex;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 11px;
+
+    .row-choice, .column-choice{
+        padding-right: 10px;
+    }
+
+    .choice-desc{
+        padding-right: 5px;
+    }
+
+    .user-input{
+        padding-left: 4px;
+        width: 40px;
+        height: 10px;
+        font-size: 9px;
+        border-radius: 2px;
+        border: 1px solid #cccccc;
+    }
+
+    .reset-container{
+        padding-left: 15px;
+
+        button{
+            font-size: 12px;
+            border-radius: 1px;
+            border: 1px;
+            color: #61dafb;
+            background-color: #222;
+            padding: 4px 4px;
+        }
+    }
+}
+
+
+

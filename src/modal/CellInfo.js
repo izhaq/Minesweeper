@@ -4,5 +4,6 @@ export default class Cell{
         this.col = col;
         this.status = "hidden";
         this.isBomb = isBomb;
+        this.isFlagged = false;
     }
 }

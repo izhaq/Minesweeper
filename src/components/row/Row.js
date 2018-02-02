@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './Row.css'
+import './Row.scss'
 import Cell from '../cell/Cell.js';
 
 

@@ -12,35 +12,51 @@ class Board extends Component {
         this.state = {
             numberOfRows : props.rows,
             numberOfColumn: props.columns,
-            rows : this.minesweeper.resetBoard(props.rows, props.columns, props.mines)
+            board : this.minesweeper.setNewGame(props.rows, props.columns, props.mines)
         }
 
-        this.openNeighbors = this.openNeighbors.bind(this);
+        this.open = this.open.bind(this);
     }
 
     componentWillReceiveProps(nextProps){
         this.setState({numberOfRows: nextProps.rows,
             numberOfColumn: nextProps.columns,
-            rows: this.minesweeper.resetBoard(nextProps.rows, nextProps.columns, nextProps.mines)
+            board: this.minesweeper.setNewGame(nextProps.rows, nextProps.columns, nextProps.mines)
         });
-
-        //this.openNeighbors = this.openNeighbors.bind(this);
     }
 
-    openNeighbors(cell){
-        let _rows_ = this.state.rows;
+    componentDidUpdate(){
+        this.logger("updated board! ");
+    }
 
-        _rows_ =this.minesweeper.openNeighbors(cell.row, cell.col, _rows_);
+    open(cell, updateSingleCell, markCell){
+        let board = this.state.board;
 
-        this.setState({
-            rows: _rows_
-        });
+        this.logger("before flood: ");
+
+        board = this.minesweeper.play(cell.row, cell.col, markCell);
+
+        this.logger("after flood: ");
+
+        if(board.length === 1){
+            updateSingleCell(board[0]);
+        }else {
+            this.setState({
+                board: board
+            });
+        }
+    }
+
+    logger(desc){
+        let date = new Date();
+        date = date.getHours()+":"+ date.getMinutes() +":"+ date.getSeconds()+":"+ date.getMilliseconds();
+        console.log(desc, date);
     }
 
     render(){
-        let Rows = this.state.rows.map((cells, index)=>{
+        let Rows = this.state.board.map((row, index)=>{
             return (
-                <Row key={index} cells={cells}  handleClick={this.openNeighbors}/>
+                <Row key={index} cells={row}  handleClick={this.open}/>
             )
         })
 

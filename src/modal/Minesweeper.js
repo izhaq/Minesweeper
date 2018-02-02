@@ -5,110 +5,145 @@ class Minesweeper {
     constructor(){
         this.opendCells = [];
         this.bombStack = {};
+        this.board = [];
+    }
+    
+    resetBoard(mines){
+        this.opendCells = [];
+        this.bombStack = {};
+        this.board = []
+        this.mines = mines;
     }
 
-     openNeighbors(row, col, rows){
-         this.openCell(row, col, rows);
+     play(row, col, markBomb){
+
+        if(markBomb){
+            this.board[row][col].isFlagged = !this.board[row][col].isFlagged;
+            return [this.board[row][col]];
+        }
+
+         if(this.isSuicideOrBombCell(this.board[row][col])){
+             this.board[row][col].status = "revealed";
+             return [this.board[row][col]];
+         }
+
+         this.travelTheBoard(row, col, this.board);
 
          while(this.opendCells.length>0){
-             let toFill = this.opendCells.pop();
-             this.openCell(toFill[0], toFill[1], rows);
+             let cellToOpen = this.opendCells.pop();
+             this.travelTheBoard(cellToOpen[0], cellToOpen[1]);
          }
 
-         return rows;
+         return this.board;
      }
 
-     openCell(row, col, rows){
-         if(!this.isCellRevealed(row, col, rows)){
-             rows[row][col].status = rows[row][col].status = "revealed";
+     travelTheBoard(row, col){
+         if(!this.isCellTraveled(row, col)){
+             this.board[row][col].status = this.board[row][col].status = "revealed";
          }
-         if(rows[row][col].isBomb || rows[row][col].suicideNeighbors > 0) {return;}
 
-         if(!this.isCellRevealed(row,   col-1, rows) && this.isCellValidToOpen(row,   col-1, rows)) {this.opendCells.push([row,   col-1])};
-         if(!this.isCellRevealed(row+1, col, rows) && this.isCellValidToOpen(row+1, col, rows)) {this.opendCells.push([row+1, col  ])};
-         if(!this.isCellRevealed(row,   col+1, rows) && this.isCellValidToOpen(row,   col+1, rows)) {this.opendCells.push([row,   col+1])};
-         if(!this.isCellRevealed(row-1, col, rows) && this.isCellValidToOpen(row-1, col, rows)) {this.opendCells.push([row-1, col  ])};
-         if(!this.isCellRevealed(row-1, col-1, rows) && this.isCellValidToOpen(row-1, col-1, rows)) {this.opendCells.push([row-1, col-1  ])};
-         if(!this.isCellRevealed(row-1, col+1, rows) && this.isCellValidToOpen(row-1, col+1, rows)) {this.opendCells.push([row-1, col+1  ])};
-         if(!this.isCellRevealed(row+1, col-1, rows) && this.isCellValidToOpen(row+1, col-1, rows)) {this.opendCells.push([row+1, col-1  ])};
-         if(!this.isCellRevealed(row+1, col+1, rows) && this.isCellValidToOpen(row+1, col+1, rows)) {this.opendCells.push([row+1, col+1  ])};
+         if(this.isSuicideOrBombCell(this.board[row][col])){return;}
+
+         this.addNeighborsCellsToOpen(row, col);
      }
 
-     isCellRevealed(row, col, rows){
-         if(!rows[row] || (rows[row] && !rows[row][col])) return true;
+    addNeighborsCellsToOpen(row, col){
+        let maxRow = Math.min(this.board.length-1, row+1),
+            maxCol = Math.min(this.board[0].length-1, col+1);
 
-         return rows[row][col].status === "revealed";
+        for(let minRow = Math.max(0, row-1); minRow <= maxRow; minRow++){
+            for(let minCol = Math.max(0, col-1); minCol <= maxCol; minCol++){
+                if(this.allowOpenCell(minRow, minCol)){
+                    this.opendCells.push([minRow, minCol])
+                }
+            }
+        }
+    }
+
+    allowOpenCell(row, col){
+        if(!this.board[row] || (this.board[row] && !this.board[row][col])) return false;
+
+        let cellNotBomb = !this.board[row][col].isBomb,
+            cellNotOpen = !this.isCellTraveled(row, col);
+
+        return cellNotOpen && cellNotBomb ;
+    }
+
+     isCellTraveled(row, col){
+         if(!this.board[row] || (this.board[row] && !this.board[row][col])) return true;
+
+         return this.board[row][col].status === "revealed";
      }
 
-     isCellValidToOpen(row, col, rows){
-         if(!rows[row] || (rows[row] && !rows[row][col])) return false;
+     setNewGame(rows, columns, mines){
 
-         let cellNotValid = rows[row][col].isBomb;
+         this.resetBoard(mines);
 
-         return !cellNotValid;
+         this.generateBombs(rows, columns);
+
+         this.setBoard(rows, columns);
+
+         this.calculateSuicideNeighbors();
+
+         return this.board;
      }
 
-     resetBoard(rows, columns, numOfbombs){
-         let board = [];
-
-         this.generateBombs(numOfbombs, rows, columns);
-
+     setBoard(rows, columns){
          for(let row = 0; row < rows; row ++){
-             board.push([]);
+             this.board.push([]);
              for(let col = 0; col < columns; col ++){
                  let isBomb = this.bombStack[row] && this.bombStack[row][col];
-                 board[row].push(new CellInfo(row, col, isBomb));
+                 this.board[row].push(new CellInfo(row, col, isBomb));
              }
          }
-         this.calculateSuicideNeighbors(rows, columns, board);
-
-         return board;
      }
 
-     calculateSuicideNeighbors(rows, columns, board){
-         for(let row = 0; row < rows; row ++){
-             for(let col = 0; col < columns; col ++){
-                 let isBomb = board[row][col].isBomb;
+    generateBombs(rows, columns) {
+        for(let bomb = 0; bomb<this.mines; bomb++) {
+            this.generateBomb(rows, columns);
+        }
+    }
+
+    generateBomb(rows, columns) {
+        let bombX = Math.floor(Math.random() * columns),
+            bombY = Math.floor(Math.random() * rows);
+
+        while(this.bombStack[bombY] && this.bombStack[bombY][bombX]){
+            bombX = Math.floor(Math.random() * columns);
+            bombY = Math.floor(Math.random() * rows);
+        }
+
+        this.bombStack[bombY] = this.bombStack[bombY] || {};
+        this.bombStack[bombY][bombX] = true;
+    }
+
+     calculateSuicideNeighbors(){
+         for(let row = 0; row < this.board.length; row ++){
+             for(let col = 0; col < this.board[row].length; col ++){
+                 let isBomb = this.board[row][col].isBomb;
                  if(!isBomb){
-                     board[row][col].suicideNeighbors = this.getSuicideNeighbors(row, col, board);
+                     this.board[row][col].suicideNeighbors = this.getSuicideNeighbors(row, col);
                  }
              }
          }
      }
 
-     getSuicideNeighbors(row, col, rows){
-         let endRow = Math.min(rows.length-1, row+1),
-             endCol = Math.min(rows[0].length-1, col+1),
+     getSuicideNeighbors(row, col){
+         let maxRow = Math.min(this.board.length-1, row+1),
+             maxCol = Math.min(this.board[0].length-1, col+1),
              suicideNeighbors = 0;
 
-         for(let startRow = Math.max(0, row-1); startRow <= endRow; startRow++){
-             for(let startCol = Math.max(0, col-1); startCol <= endCol; startCol++){
-                 suicideNeighbors += rows[startRow][startCol].isBomb ? 1: 0;
+         for(let minRow = Math.max(0, row-1); minRow <= maxRow; minRow++){
+             for(let minCol = Math.max(0, col-1); minCol <= maxCol; minCol++){
+                 suicideNeighbors += this.board[minRow][minCol].isBomb ? 1: 0;
              }
          }
 
          return suicideNeighbors;
      }
 
-     generateBombs(numBombs, rows, columns) {
-         this.bombStack = {};
-
-         for(let bomb = 0; bomb<numBombs; bomb++) {
-             this.generateBomb(rows, columns);
-         }
-     }
-
-     generateBomb(rows, columns) {
-         let x = Math.floor(Math.random() * columns),
-             y = Math.floor(Math.random() * rows);
-
-         while(this.bombStack[y] && this.bombStack[y][x]){
-             x = Math.floor(Math.random() * columns);
-             y = Math.floor(Math.random() * rows);
-         }
-
-         this.bombStack[y] = this.bombStack[y] || {};
-         this.bombStack[y][x] = true;
+     isSuicideOrBombCell(cellInfo){
+         return cellInfo.isBomb || cellInfo.suicideNeighbors > 0
      }
  }
 

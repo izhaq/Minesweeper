@@ -21,8 +21,15 @@ class Cell extends Component {
         });
     }
 
-    handleClick(){
-        this.props.handleClick(this.state.cellInfo);
+    handleClick(e){
+        this.props.handleClick(this.state.cellInfo, this.openCell.bind(this), e.shiftKey);
+    }
+
+    openCell(cellInfo){
+        this.setState({
+            cellInfo: cellInfo,
+            status: "revealed"
+        });
     }
 
     getClass(){
@@ -32,18 +39,21 @@ class Cell extends Component {
 
     getCellDescription(){
         let desc = this.state.cellInfo.status === "revealed" ?
-                    this.state.cellInfo.suicideNeighbors > 0 ? this.state.cellInfo.suicideNeighbors :
+                        this.state.cellInfo.suicideNeighbors > 0 ? this.state.cellInfo.suicideNeighbors :
                                                                this.state.cellInfo.isBomb ? "B": "": "" ;
         return desc;
     }
 
     render(){
         return (
-            <div className={"Cell ".concat(this.getClass())} onClick={ this.handleClick } >
-                {this.getCellDescription()}
+            <div className="cell-container">
+                <div className={"Cell ".concat(this.getClass())} onClick={ this.handleClick } >
+                    {this.getCellDescription()}
+                </div>
             </div>
         );
     }
 }
+
 
 export default Cell;

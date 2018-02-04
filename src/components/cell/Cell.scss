@@ -3,7 +3,7 @@
     border-bottom: 1px solid #222;
 
 
-    .Cell {
+    .cell {
         display: flex;
         height: 40px;
         min-width: 40px;
@@ -15,16 +15,54 @@
         border-radius: 10px;
         font-size: 12px;
 
-        &.revealed {
-            background-color: white;
+        &.superman{
+            background-color: red;
+        }
 
-            &.bomb {
+        &.open-cell {
+            background-color: white;
+            color: #61dafb;
+
+            &.mine-cell {
                 background-color: red;
+            }
+
+            &.mine-near-cell-1{
+                color: red;
+            }
+
+            &.mine-near-cell-2{
+                color: silver;
+            }
+
+            &.mine-near-cell-3{
+                color: gold;
+            }
+
+            &.mine-near-cell-4{
+                color: pink;
+            }
+
+
+            &.mine-near-cell-5{
+                color: brown;
+            }
+
+
+            &.mine-near-cell-6{
+                color: green;
+            }
+        }
+
+        &.close-cell{
+
+            &.flag-cell{
+                background-color: green;
             }
         }
     }
 
-    .Cell:last-child {
+    .cell:last-child {
         border-right: none;
     }
 }

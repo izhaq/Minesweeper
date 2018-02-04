@@ -12,17 +12,26 @@ class Board extends Component {
         this.state = {
             numberOfRows : props.rows,
             numberOfColumn: props.columns,
-            board : this.minesweeper.setNewGame(props.rows, props.columns, props.mines)
+            board : this.minesweeper.setNewGame(props.rows, props.columns, props.totalMines),
+            setSupermanMode : props.setSupermanMode,
+            isSupermanModeOn: props.isSupermanModeOn
         }
 
         this.open = this.open.bind(this);
     }
 
     componentWillReceiveProps(nextProps){
-        this.setState({numberOfRows: nextProps.rows,
-            numberOfColumn: nextProps.columns,
-            board: this.minesweeper.setNewGame(nextProps.rows, nextProps.columns, nextProps.mines)
-        });
+        if(nextProps.setSupermanMode){
+            this.setState({
+                board: this.minesweeper.setSupermanMode().state
+            });
+        }else {
+            this.setState({
+                numberOfRows: nextProps.rows,
+                numberOfColumn: nextProps.columns,
+                board: this.minesweeper.setNewGame(nextProps.rows, nextProps.columns, nextProps.totalMines)
+            });
+        }
     }
 
     componentDidUpdate(){
@@ -30,20 +39,20 @@ class Board extends Component {
     }
 
     open(cell, updateSingleCell, markCell){
-        let board = this.state.board;
-
         this.logger("before flood: ");
 
-        board = this.minesweeper.play(cell.row, cell.col, markCell);
+        let gameState = this.minesweeper.play(cell.row, cell.col, markCell);
 
         this.logger("after flood: ");
 
-        if(board.length === 1){
-            updateSingleCell(board[0]);
-        }else {
-            this.setState({
-                board: board
-            });
+        if(gameState.actionSuccess){
+            if(gameState.state.length === 1){
+                updateSingleCell(gameState.state[0]);
+            }else {
+                this.setState({
+                    board: gameState.state
+                });
+            }
         }
     }
 

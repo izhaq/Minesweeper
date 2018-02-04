@@ -9,12 +9,15 @@ class UserChoice extends Component {
         this.state = {
             rows: 10,
             columns: 10,
-            mines: 10
+            totalMines: 10,
+            superman: false
         }
 
         this.handleRowChange = this.handleRowChange.bind(this);
         this.handleColumnsChange = this.handleColumnsChange.bind(this);
         this.notifyListeners = this.notifyListeners.bind(this);
+        this.handleSupermanMode = this.handleSupermanMode.bind(this);
+
     }
 
     componentWillUpdate(prevProps, prevState){
@@ -24,7 +27,15 @@ class UserChoice extends Component {
     }
 
     notifyListeners(){
-        this.props.notify({rows: this.state.rows, columns: this.state.columns, mines: this.state.mines});
+        this.props.notify({rows: this.state.rows, columns: this.state.columns, totalMines: this.state.totalMines});
+    }
+
+
+    handleSupermanMode(){
+        this.setState({superman: !this.state.superman},()=>{
+            this.props.notify({setSupermanMode: true, isSupermanModeOn: this.state.superman});
+        });
+
     }
 
     handleRowChange(e){
@@ -39,12 +50,16 @@ class UserChoice extends Component {
 
     handleMinesChange(e){
         let mines = e.target.value;
-        this.setState({mines: mines});
+        this.setState({totalMines: mines});
     }
 
     render(){
         return (
             <div className="User-choice">
+                <div className="superman-mode">
+                    <input onChange={this.handleSupermanMode} id="superman" type="checkbox" checked={this.state.superman} />
+                    <label htmlFor="superman">Label</label>
+                </div>
                 <div className="row-choice">
                     <span className="choice-desc">Rows</span>
                     <input className="user-input" type="text" value={this.state.rows} onChange={(e) => this.handleRowChange(e)} />
@@ -55,7 +70,7 @@ class UserChoice extends Component {
                 </div>
                 <div className="mine-choice">
                     <span className="choice-desc">Mines</span>
-                    <input className="user-input" type="text" value={this.state.mines} onChange={(e) => this.handleMinesChange(e)}/>
+                    <input className="user-input" type="text" value={this.state.totalMines} onChange={(e) => this.handleMinesChange(e)}/>
                 </div>
                 <div className="reset-container">
                     <button onClick={this.notifyListeners}>

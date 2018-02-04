@@ -11,7 +11,9 @@ class App extends Component {
         this.state = {
             rows: 10,
             columns: 10,
-            mines: 10
+            totalMines: 10,
+            setSupermanMode : false,
+            isSupermanModeOn: false
         }
         this.updateUserSelection = this.updateUserSelection.bind(this);
     }
@@ -21,7 +23,9 @@ class App extends Component {
         this.setState({
             rows: updateInfo.rows,
             columns: updateInfo.columns,
-            mines: updateInfo.mines
+            totalMines: updateInfo.totalMines,
+            setSupermanMode : updateInfo.setSupermanMode,
+            isSupermanModeOn: updateInfo.isSupermanModeOn
         });
     }
 
@@ -35,7 +39,8 @@ class App extends Component {
           <div className="widget-body">
               <div className="board-container">
                   <UserChoice notify={this.updateUserSelection}/>
-                  <Board rows={this.state.rows} columns={this.state.columns} mines={this.state.mines}/>
+                  <Board rows={this.state.rows} columns={this.state.columns} totalMines={this.state.totalMines}
+                         setSupermanMode={this.state.setSupermanMode} isSupermanModeOn={this.state.isSupermanModeOn}/>
               </div>
           </div>
       </div>

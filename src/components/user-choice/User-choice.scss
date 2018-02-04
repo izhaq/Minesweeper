@@ -3,6 +3,14 @@
     padding-top: 10px;
     padding-bottom: 10px;
     font-size: 11px;
+    display: flex;
+    align-items: center;
+
+    .superman-mode{
+        display: flex;
+        align-items: center;
+        padding-right: 15px;
+    }
 
     .row-choice, .column-choice{
         padding-right: 10px;

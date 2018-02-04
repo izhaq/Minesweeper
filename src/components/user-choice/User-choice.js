@@ -58,7 +58,7 @@ class UserChoice extends Component {
             <div className="User-choice">
                 <div className="superman-mode">
                     <input onChange={this.handleSupermanMode} id="superman" type="checkbox" checked={this.state.superman} />
-                    <label htmlFor="superman">Label</label>
+                    <label htmlFor="superman">Superman</label>
                 </div>
                 <div className="row-choice">
                     <span className="choice-desc">Rows</span>

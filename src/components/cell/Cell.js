@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import './Cell.scss';
+import './cell.scss';
 
 
-class Cell extends Component {
+export default class Cell extends Component {
     constructor(props){
         super(props);
         this.state ={
@@ -10,8 +10,8 @@ class Cell extends Component {
         }
 
         this.handleClick = this.handleClick.bind(this);
-        this.getClass = this.getClass.bind(this);
-        this.getCellDescription = this.getCellDescription.bind(this);
+        this.className = this.className.bind(this);
+        this.cellDescription = this.cellDescription.bind(this);
     }
 
     componentWillReceiveProps(nextProps){
@@ -21,7 +21,7 @@ class Cell extends Component {
     }
 
     handleClick(e){
-        this.props.handleClick(this.state.cellInfo, this.openCell.bind(this), e.shiftKey);
+        this.props.handleClick(this.state.cellInfo, (cellInfo) => this.openCell(cellInfo), e.shiftKey);
     }
 
     openCell(cellInfo){
@@ -30,33 +30,28 @@ class Cell extends Component {
         });
     }
 
-    getClass(){
-        let classNames = this.state.cellInfo.isOpen ? "open-cell ": "close-cell ";
-        classNames = this.state.cellInfo.hasMine ? classNames.concat("mine-cell ") : classNames;
-        classNames = this.state.cellInfo.superman ? classNames.concat("superman ") : classNames;
-        classNames = this.state.cellInfo.hasFlag ? classNames.concat("flag-cell ") : classNames;
-        classNames = this.state.cellInfo.suicideNeighbors ? classNames.concat("mine-near-cell-"+this.state.cellInfo.suicideNeighbors+" ") : classNames;
+    className(){
+        const classNames = ["cell"];
+        if(this.state.cellInfo.isOpen) {classNames.push("open-cell");} else {classNames.push("close-cell");}
+        if(this.state.cellInfo.hasMine) {classNames.push("mine-cell");}
+        if(this.state.cellInfo.superman) {classNames.push("superman");}
+        if(this.state.cellInfo.hasFlag) {classNames.push("flag-cell");}
+        if(this.state.cellInfo.suicideNeighbors) {classNames.push("mine-near-cell-"+this.state.cellInfo.suicideNeighbors);}
 
-        return classNames;
+        return classNames.join(' ');
     }
 
-    getCellDescription(){
-        let desc = this.state.cellInfo.isOpen ?
-                        this.state.cellInfo.suicideNeighbors ? this.state.cellInfo.suicideNeighbors :
-                                                               this.state.cellInfo.hasMine ? "B": "": "" ;
-        return desc;
+    cellDescription(){
+        return this.state.cellInfo.cellDescription();
     }
 
     render(){
         return (
             <div className="cell-container">
-                <div className={"cell ".concat(this.getClass())} onClick={ this.handleClick } >
-                    {this.getCellDescription()}
+                <div className={this.className()} onClick={ this.handleClick } >
+                    {this.cellDescription()}
                 </div>
             </div>
         );
     }
 }
-
-
-export default Cell;

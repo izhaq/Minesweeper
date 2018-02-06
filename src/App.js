@@ -12,20 +12,29 @@ class App extends Component {
             rows: 10,
             columns: 10,
             totalMines: 10,
+            leftFlags: 10,
             setSupermanMode : false,
-            isSupermanModeOn: false
+            reset: false
         }
-        this.updateUserSelection = this.updateUserSelection.bind(this);
+        this.updateBoard = this.updateBoard.bind(this);
+        this.updateUserChoice = this.updateUserChoice.bind(this);
+
     }
 
 
-    updateUserSelection(updateInfo){
+    updateBoard(updateInfo){
         this.setState({
             rows: updateInfo.rows,
             columns: updateInfo.columns,
             totalMines: updateInfo.totalMines,
-            setSupermanMode : updateInfo.setSupermanMode,
-            isSupermanModeOn: updateInfo.isSupermanModeOn
+            setSupermanMode : updateInfo.setSupermanMode
+        });
+    }
+
+    updateUserChoice(updateInfo){
+        this.setState({
+            reset : updateInfo.reset || false,
+            leftFlags: updateInfo.leftFlags
         });
     }
 
@@ -37,10 +46,11 @@ class App extends Component {
           <h1 className="App-title"></h1>
         </header>
           <div className="widget-body">
+              <UserChoice rows={this.state.rows} columns={this.state.columns} totalMines={this.state.totalMines} leftFlags={this.state.leftFlags}
+                          superman={this.state.setSupermanMode} reset={this.state.reset} updateBoard={this.updateBoard}/>
               <div className="board-container">
-                  <UserChoice notify={this.updateUserSelection}/>
                   <Board rows={this.state.rows} columns={this.state.columns} totalMines={this.state.totalMines}
-                         setSupermanMode={this.state.setSupermanMode} isSupermanModeOn={this.state.isSupermanModeOn}/>
+                         setSupermanMode={this.state.setSupermanMode} updateUserChoice={this.updateUserChoice}/>
               </div>
           </div>
       </div>

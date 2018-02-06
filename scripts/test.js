@@ -1,5 +1,10 @@
 'use strict';
 
+//import { configure } from 'enzyme';
+//import Adapter from 'enzyme-adapter-react-16';
+
+//configure({ adapter: new Adapter() });
+
 // Do this as the first thing so that any code reading it knows the right env.
 process.env.BABEL_ENV = 'test';
 process.env.NODE_ENV = 'test';
@@ -22,6 +27,8 @@ const argv = process.argv.slice(2);
 if (!process.env.CI && argv.indexOf('--coverage') < 0) {
   argv.push('--watch');
 }
+
+// argv.push('--coverage');
 
 
 jest.run(argv);

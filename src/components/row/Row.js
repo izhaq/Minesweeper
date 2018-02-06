@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
-import './Row.scss'
+import './row.scss'
 import Cell from '../cell/Cell.js';
 
 
-class Row extends Component {
+export default class Row extends Component {
     constructor(props){
         super(props);
         this.state = {
-            cells : props.cells
+            cells : props.cells,
+            index: props.rowId
         }
     }
 
@@ -31,5 +32,3 @@ class Row extends Component {
         );
     }
 }
-
-export default Row;

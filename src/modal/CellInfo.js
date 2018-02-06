@@ -8,4 +8,14 @@ export default class Cell{
         this.suicideNeighbors = 0;
         this.superman = false;
     }
+
+    cellDescription(){
+        let description = "";
+        if(this.isOpen) {
+            if(this.suicideNeighbors){description = this.suicideNeighbors}
+            else if(this.hasMine) {description = "Boom !"}
+        }
+
+        return description;
+    }
 }

@@ -7,33 +7,46 @@ class UserChoice extends Component {
     constructor(props){
         super(props);
         this.state = {
-            rows: 10,
-            columns: 10,
-            totalMines: 10,
-            superman: false
+            rows: props.rows,
+            columns: props.columns,
+            totalMines: props.totalMines,
+            superman: props.superman,
+            leftFlags: props.leftFlags
         }
 
         this.handleRowChange = this.handleRowChange.bind(this);
         this.handleColumnsChange = this.handleColumnsChange.bind(this);
+        this.handleMinesChange = this.handleMinesChange.bind(this);
         this.notifyListeners = this.notifyListeners.bind(this);
         this.handleSupermanMode = this.handleSupermanMode.bind(this);
 
     }
 
-    componentWillUpdate(prevProps, prevState){
+    componentWillReceiveProps(nextProps){
+        if(nextProps.reset){this.resetSelection();}
+        if(nextProps.leftFlags){}
     }
 
-    componentDidUpdate(prevProps, prevState){
+    resetSelection(){
+        this.setState({
+            superman: false,
+            leftFlags: this.state.totalMines
+        })
     }
 
     notifyListeners(){
-        this.props.notify({rows: this.state.rows, columns: this.state.columns, totalMines: this.state.totalMines});
+        if(this.maxNumberOfMinesExceeded(this.state.rows, this.state.columns, this.state.totalMines)){
+            alert("maximum number of mines exceeded !");
+        }else{
+            this.resetSelection();
+            this.props.updateBoard({rows: this.state.rows, columns: this.state.columns, totalMines: this.state.totalMines});
+        }
     }
 
 
     handleSupermanMode(){
         this.setState({superman: !this.state.superman},()=>{
-            this.props.notify({setSupermanMode: true, isSupermanModeOn: this.state.superman});
+            this.props.updateBoard({setSupermanMode: true});
         });
 
     }
@@ -50,7 +63,15 @@ class UserChoice extends Component {
 
     handleMinesChange(e){
         let mines = e.target.value;
-        this.setState({totalMines: mines});
+        this.setState({
+            totalMines: mines,
+            leftFlags: mines
+        });
+
+    }
+
+    maxNumberOfMinesExceeded(){
+        return this.state.rows*this.state.columns < this.state.totalMines;
     }
 
     render(){
@@ -62,19 +83,22 @@ class UserChoice extends Component {
                 </div>
                 <div className="row-choice">
                     <span className="choice-desc">Rows</span>
-                    <input className="user-input" type="text" value={this.state.rows} onChange={(e) => this.handleRowChange(e)} />
+                    <input className="user-input" type="text" value={this.state.rows} onChange={this.handleRowChange} />
                 </div>
                 <div className="column-choice">
                     <span className="choice-desc">Columns</span>
-                    <input className="user-input" type="text" value={this.state.columns} onChange={(e) => this.handleColumnsChange(e)}/>
+                    <input className="user-input" type="text" value={this.state.columns} onChange={this.handleColumnsChange}/>
                 </div>
                 <div className="mine-choice">
                     <span className="choice-desc">Mines</span>
-                    <input className="user-input" type="text" value={this.state.totalMines} onChange={(e) => this.handleMinesChange(e)}/>
+                    <input className="user-input" type="text" value={this.state.totalMines} onChange={this.handleMinesChange}/>
+                </div>
+                <div className="flag-left">
+                    <span className="choice-desc">Left flags: {this.state.leftFlags}</span>
                 </div>
                 <div className="reset-container">
                     <button onClick={this.notifyListeners}>
-                        Reset
+                        New Game
                     </button>
                 </div>
             </div>

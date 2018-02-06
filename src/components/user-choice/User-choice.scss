@@ -1,10 +1,12 @@
 .User-choice{
     display: flex;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    font-size: 11px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 10px;
     display: flex;
     align-items: center;
+    width: 100%;
+    background-color: lightgray;
 
     .superman-mode{
         display: flex;
@@ -33,12 +35,12 @@
         padding-left: 15px;
 
         button{
-            font-size: 12px;
+            font-size: 10px;
             border-radius: 1px;
             border: 1px;
-            color: #61dafb;
+            color: lightgray;
             background-color: #222;
-            padding: 4px 4px;
+            padding: 3px 3px;
         }
     }
 }

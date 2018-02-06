@@ -1,5 +1,7 @@
 import CellInfo from './CellInfo';
-import GameStateInfo from './GameStateInfo'
+import GameState from './GameStateInfo'
+
+
 
 class Minesweeper {
 
@@ -8,44 +10,20 @@ class Minesweeper {
         this.bombStack = {};
         this.board = [];
     }
-    
-    resetBoard(totalMines){
-        this.opendCells = [];
-        this.bombStack = {};
-        this.board = []
-        this.totalMines =  parseInt(totalMines);
-        this.totalFlags = 0;
-        this.successfullFlag = 0;
-        this.totalOpenCellsWithoutMins = 0,
-        this.supermanMode = false
-    }
 
      play(row, col, setFlag){
+		 if(this.setFlagOnBoard(row, col, setFlag)){return;}
 
-        if(setFlag){
-            return this.setFlagOnBoard(row, col);
-        }
+		 if(this.openCellWithFlag(row, col)){return;}
 
-        if(this.board[row][col].hasFlag){
-            return new GameStateInfo({actionSuccess: false, gameOver: false});
-        }
+		 if(this.openMine(row, col)){return;}
 
-        if(this.board[row][col].hasMine){
-            this.board[row][col].isOpen = true;
-            return new GameStateInfo({actionSuccess: true, state: [this.board[row][col]], gameOver: true, stateDesc: "you lose !"});
-        }
+         if(this.openSuicideNeighbors(row, col)){return;}
 
-        if(this.board[row][col].suicideNeighbors > 0){
-            this.board[row][col].isOpen = true;
-            this.totalOpenCellsWithoutMins++;
-            return new GameStateInfo({actionSuccess: true, state: [this.board[row][col]], gameOver: this.isGameOver(), stateDesc: "you win !"});
-        }
-
-        return this.travel(row, col);
-
+         this.travel(row, col);
      }
 
-     setSupermanMode(){
+     supermanMode(){
          for(let row=0; row < this.board.length; row++){
              for(let col=0; col< this.board[row].length; col++){
                  if(this.board[row][col].hasMine){
@@ -53,35 +31,122 @@ class Minesweeper {
                  }
              }
          }
-
-         return new GameStateInfo({actionSuccess: true, state: this.board, gameOver: false});
+         this.setGameState({actionSuccess: true, state: this.board, gameOver: false});
      }
 
-     setFlagOnBoard(row, col){
-        // case 1: if all flags already been used and this current cell doesn't
-        // have flag - can't set any new flag before an existing one will be removed
-        if(!this.board[row][col].hasFlag && this.totalFlags === this.totalMines){
-            return new GameStateInfo({actionSuccess: false, stateDesc: "All flags already used !"});
-        }
+    newGame(rows, columns, totalMines){
 
-        //case 2: flag already exist on this current cell - flag will be removed
+        this.resetBoard(totalMines);
+
+        this.generateBombs(rows, columns);
+
+        this.setBoard(rows, columns);
+
+        this.calculateSuicideNeighbors();
+
+        this.setGameState({actionSuccess: true, state: this.board, gameOver: false});
+    }
+
+    setGameState(gameState){
+        gameState.totalMines = this.totalMines;
+        gameState.leftFlags  = this.leftFlags();
+        this.gameState = new GameState(gameState);
+    }
+
+    getGameState(){
+        return this.gameState;
+    }
+
+    resetBoard(totalMines){
+        this.opendCells = [];
+        this.bombStack = {};
+        this.board = []
+        this.totalMines =  parseInt(totalMines);
+        this.totalFlags = 0;
+        this.successfullFlag = 0;
+        this.totalOpenCellsWithoutMins = 0
+    }
+
+     setFlagOnBoard(row, col, flag){
+
+        if(!flag){return false;}
+
+        if(this.addFlagWhenAllFlagsAlreadyUsed(row, col)){return true;}
+
+        if(this.removeFlag(row, col)){return true;}
+
+        return this.addFlag(row, col);
+     }
+
+    leftFlags(){
+        return this.totalMines - this.totalFlags;
+    }
+
+     addFlagWhenAllFlagsAlreadyUsed(row, col){
+         if(!this.board[row][col].hasFlag && this.totalFlags === this.totalMines){
+             this.setGameState({actionSuccess: false, stateDesc: "All flags already used !"});
+             return true;
+         }
+         return false;
+     }
+
+     removeFlag(row, col){
          if(this.board[row][col].hasFlag){
              this.board[row][col].hasFlag = false;
              this.totalFlags--;
              this.successfullFlag -= this.bombStack[row] && this.bombStack[row][col] ? 1: 0;
-
-             return new GameStateInfo({actionSuccess: true, state: [this.board[row][col]], gameOver: false});
+             this.setGameState({actionSuccess: true, state: [this.board[row][col]], gameOver: false});
+             return true;
          }
+         return false;
+     }
 
-         //case 3: flag doesn't exist - set this cell with flag and chck if all mine were marked with cell
+     addFlag(row, col){
          this.board[row][col].hasFlag = true;
          this.totalFlags++;
          this.successfullFlag += this.bombStack[row] && this.bombStack[row][col]  ? 1: 0;
-         if(this.successfullFlag === this.totalMines){
-             return new GameStateInfo({actionSuccess: true, state: [this.board[row][col]], gameOver: true, stateDesc: "you won !"});
-         }
+         if(this.gameOver()){
+             this.setGameState({actionSuccess: true, state: [this.board[row][col]], gameOver: true, stateDesc: "you won !"});
+         }else{this.setGameState({actionSuccess: true, state: [this.board[row][col]], gameOver: false});}
 
-         return new GameStateInfo({actionSuccess: true, state: [this.board[row][col]], gameOver: false});
+         return true;
+     }
+
+     openCellWithFlag(row, col){
+         if(this.board[row][col].hasFlag){
+             this.setGameState({actionSuccess: false, gameOver: false});
+             return true;
+         }
+         return false;
+     }
+
+     gameOver(){
+         return this.allFlagsSetOnMines() || this.mineOpend || this.allCellsWithoutMinesAreOpend();
+     }
+
+     allFlagsSetOnMines(){
+         return this.successfullFlag === this.totalMines;
+     }
+
+     openMine(row, col){
+         if(this.board[row][col].hasMine){
+             this.board[row][col].isOpen = true;
+             this.mineOpend = true
+             this.setGameState({actionSuccess: true, state: [this.board[row][col]], gameOver: true, stateDesc: "you lose !"});
+             return true;
+         }
+         return false;
+     }
+
+     openSuicideNeighbors(row, col){
+         if(this.board[row][col].suicideNeighbors > 0){
+             this.board[row][col].isOpen = true;
+             this.totalOpenCellsWithoutMins++;
+             this.setGameState({actionSuccess: true, state: [this.board[row][col]], gameOver: this.isGameOver(), stateDesc: "you win !"});
+
+             return true;
+         }
+         return false;
      }
 
      travel(row, col){
@@ -92,11 +157,13 @@ class Minesweeper {
              this.travelTheBoard(cellToOpen[0], cellToOpen[1]);
          }
 
-         let gameStateInfo =  this.totalOpenCellsWithoutMins === ((this.board.length * this.board[0].length) - this.totalMines) ?
-             new GameStateInfo({actionSuccess: true, state: this.board, gameOver: true, stateDesc: "you won !"}) :
-             new GameStateInfo({actionSuccess: true, state: this.board, gameOver: false});
+         if(this.allCellsWithoutMinesAreOpend()) {
+             this.setGameState({actionSuccess: true, state: this.board, gameOver: true, stateDesc: "you won !"})
+         }else{this.setGameState({actionSuccess: true, state: this.board, gameOver: false});}
+    }
 
-         return gameStateInfo;
+    allCellsWithoutMinesAreOpend(){
+         return this.totalOpenCellsWithoutMins === ((this.board.length * this.board[0].length) - this.totalMines)
     }
 
      travelTheBoard(row, col){
@@ -105,7 +172,7 @@ class Minesweeper {
              this.totalOpenCellsWithoutMins++;
          }
 
-         if(this.isSuicideNeighborOrBombCell(this.board[row][col])){return;}
+         if(this.suicideNeighborOrMine(this.board[row][col])){return;}
 
          this.addNeighborsCellsToOpen(row, col);
      }
@@ -137,19 +204,6 @@ class Minesweeper {
          if(!this.board[row] || (this.board[row] && !this.board[row][col])) return true;
 
          return this.board[row][col].isOpen;
-     }
-
-     setNewGame(rows, columns, totalMines){
-
-         this.resetBoard(totalMines);
-
-         this.generateBombs(rows, columns);
-
-         this.setBoard(rows, columns);
-
-         this.calculateSuicideNeighbors();
-
-         return this.board;
      }
 
      setBoard(rows, columns){
@@ -206,7 +260,7 @@ class Minesweeper {
          return suicideNeighbors;
      }
 
-     isSuicideNeighborOrBombCell(cellInfo){
+     suicideNeighborOrMine(cellInfo){
          return cellInfo.hasMine || cellInfo.suicideNeighbors > 0
      }
 

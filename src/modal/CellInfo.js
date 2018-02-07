@@ -1,4 +1,4 @@
-export default class Cell{
+export default class CellInfo{
     constructor(row, col, isBomb){
         this.row = row;
         this.col = col;

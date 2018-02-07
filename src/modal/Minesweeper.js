@@ -90,7 +90,7 @@ class Minesweeper {
         const cellDoesntHaveFlag = !this.board[row][col].hasFlag;
 
          if(cellDoesntHaveFlag && this.allFlagsUsed()){
-             this.setGameState({actionSuccess: false, stateDesc: MESSAGES.ALL_FLAGS_ALREADY_USED});
+             this.setGameState({actionSuccess: false, stateDesc: MESSAGES.MAX_FLAG_EXCEEDED});
              return true;
          }
          return false;
@@ -128,7 +128,7 @@ class Minesweeper {
 
      openCellWithFlag(row, col){
          if(this.board[row][col].hasFlag){
-             this.setGameState({actionSuccess: false, gameOver: false});
+             this.setGameState({actionSuccess: false, gameOver: false, stateDesc: MESSAGES.CANNOT_OPEN_FLAGGED_CELL});
              return true;
          }
          return false;

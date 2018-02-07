@@ -35,16 +35,20 @@ class UserChoice extends Component {
         if(this.maxNumberOfMinesExceeded()){alert(MESSAGES.MAX_MINE_EXCEEDED);}
         else{
             this.resetSuperman();
-            this.props.update({rows: this.state.rows, columns: this.state.columns, totalMines: this.state.totalMines, action: ACTIONS.NEW_GAME});
+            this.updateBoard({rows: this.state.rows, columns: this.state.columns, totalMines: this.state.totalMines, action: ACTIONS.NEW_GAME});
         }
     }
 
 
     handleSuperman(){
         this.setState({superman: !this.state.superman},()=>{
-            this.props.update({action: ACTIONS.SUPERMAN});
+            this.updateBoard({action: ACTIONS.SUPERMAN})
         });
 
+    }
+
+    updateBoard(data){
+        this.props.update(data);
     }
 
     updateUserInput(prop, e){

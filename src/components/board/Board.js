@@ -35,7 +35,7 @@ class Board extends Component {
     checkGameStatus(){
         if(this.gameState.gameOver){
             setTimeout(()=>{
-                alert(this.gameState.stateDesc);
+                this.showMassage(this.gameState.stateDesc);
                 this.props.update({action: ACTIONS.RESET});
         },50)};
     }
@@ -47,29 +47,36 @@ class Board extends Component {
         });
     }
 
-    updateFlagsLeft(prevLeftFlags){
-        if(prevLeftFlags !== this.gameState.leftFlags){
+    updateFlagsLeft(newFlag){
+        if(newFlag){
             this.props.update({action: ACTIONS.FLAG_CHANGE, leftFlags: this.gameState.leftFlags});
         }
     }
 
-    open(cell, updateSingleCell, setFlag){
-        const prevFlagsLeft = this.gameState.leftFlags;
+    updateBoard(updateClickedCell, newFlag){
+        if(this.gameState.singleUpdate()){
+            updateClickedCell(this.gameState.state[0]);
+            this.updateFlagsLeft(newFlag);
+        }else {
+            this.setState({
+                board: this.gameState.state
+            });
+        }
+    }
 
-        this.minesweeper.play(cell.row, cell.col, setFlag);
+    showMassage(message){
+        alert(message);
+    }
+
+    open(cell, updateClickedCell, newFlag){
+
+        this.minesweeper.play(cell.row, cell.col, newFlag);
         this.gameState = this.minesweeper.getGameState();
 
         if(this.gameState.actionSuccess){
-            if(this.gameState.singleUpdate()){
-                updateSingleCell(this.gameState.state[0]);
-                this.updateFlagsLeft(prevFlagsLeft);
-            }else {
-                this.setState({
-                    board: this.gameState.state
-                });
-            }
+            this.updateBoard(updateClickedCell, newFlag);
             this.checkGameStatus();
-        }
+        }else{this.showMassage(this.gameState.stateDesc)}
     }
 
     render(){

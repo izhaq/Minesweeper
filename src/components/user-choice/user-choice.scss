@@ -6,7 +6,8 @@
     display: flex;
     align-items: center;
     width: 100%;
-    background-color: lightgray;
+    background-color: whitesmoke;
+    border: 1px inset;
 
     .flag-left{
         padding-left: 10px;
@@ -44,8 +45,18 @@
             border: 1px;
             color: lightgray;
             background-color: #222;
-            padding: 3px 3px;
+            padding: 3px 13px;
+            cursor: pointer;
         }
+
+        button:hover{
+            background-color: lightslategray;
+        }
+    }
+
+    .loading-logo{
+        animation: App-logo-spin infinite 20s linear;
+        height: 20px;
     }
 }
 

@@ -3,7 +3,7 @@ import Board from './components/board/Board'
 import UserChoice from './components/user-choice/User-choice'
 import {ACTIONS} from './modal/Constants';
 import logo from './logo.svg';
-import './App.css';
+import './App.scss';
 
 
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import Minesweeper from '../../modal/Minesweeper'
-import PropTypes from 'prop-types'
+import Minesweeper from '../../modal/Minesweeper';
+import {ACTIONS} from '../../modal/Constants';
 import './board.scss'
 import Row from '../row/Row.js';
 
@@ -21,24 +21,22 @@ class Board extends Component {
     }
 
     componentWillReceiveProps(nextProps){
-        if(nextProps.setSupermanMode) {this.minesweeper.supermanMode();}
-        else {this.minesweeper.newGame(nextProps.rows, nextProps.columns, nextProps.totalMines)}
-
-        this.setGameState();
+        if(nextProps.action === ACTIONS.SUPERMAN && this.props.superman !== nextProps.superman) {
+            this.minesweeper.supermanMode();
+            this.setGameState();
+        }
+        if(nextProps.action === ACTIONS.NEW_GAME){
+            this.minesweeper.newGame(nextProps.rows, nextProps.columns, nextProps.totalMines);
+            this.setGameState();
+        }
     }
 
-    componentDidUpdate(){
-        this.checkGameStatus();
-    }
 
     checkGameStatus(){
         if(this.gameState.gameOver){
             setTimeout(()=>{
                 alert(this.gameState.stateDesc);
-                this.props.updateUserChoice({reset: true});
-                this.minesweeper.newGame(this.state.board.length, this.state.board[0].length,
-                    this.gameState.totalMines);
-                this.setGameState();
+                this.props.update({action: ACTIONS.RESET});
         },50)};
     }
 
@@ -49,20 +47,28 @@ class Board extends Component {
         });
     }
 
-    open(cell, updateSingleCell, markCell){
-        this.minesweeper.play(cell.row, cell.col, markCell);
+    updateFlagsLeft(prevLeftFlags){
+        if(prevLeftFlags !== this.gameState.leftFlags){
+            this.props.update({action: ACTIONS.FLAG_CHANGE, leftFlags: this.gameState.leftFlags});
+        }
+    }
 
+    open(cell, updateSingleCell, setFlag){
+        const prevFlagsLeft = this.gameState.leftFlags;
+
+        this.minesweeper.play(cell.row, cell.col, setFlag);
         this.gameState = this.minesweeper.getGameState();
 
         if(this.gameState.actionSuccess){
             if(this.gameState.singleUpdate()){
                 updateSingleCell(this.gameState.state[0]);
-                this.checkGameStatus();
+                this.updateFlagsLeft(prevFlagsLeft);
             }else {
                 this.setState({
                     board: this.gameState.state
                 });
             }
+            this.checkGameStatus();
         }
     }
 
@@ -80,15 +86,5 @@ class Board extends Component {
         );
     }
 }
-
-Board.defaultProps = {
-    numberOfRows:   10,
-    numberOfColumn: 10,
-}
-
-Board.propTypes = {
-    numberOfRows:   PropTypes.number,
-    numberOfColumn: PropTypes.number
-};
 
 export default Board;

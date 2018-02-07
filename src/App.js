@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
 import Board from './components/board/Board'
 import UserChoice from './components/user-choice/User-choice'
+import {ACTIONS} from './modal/Constants';
 import logo from './logo.svg';
 import './App.css';
+
+
+
 
 class App extends Component {
 
@@ -13,29 +17,44 @@ class App extends Component {
             columns: 10,
             totalMines: 10,
             leftFlags: 10,
-            setSupermanMode : false,
-            reset: false
+            superman : false,
+            action: ACTIONS.NEW_GAME
         }
-        this.updateBoard = this.updateBoard.bind(this);
-        this.updateUserChoice = this.updateUserChoice.bind(this);
+        this.update = this.update.bind(this);
 
     }
 
 
-    updateBoard(updateInfo){
-        this.setState({
-            rows: updateInfo.rows,
-            columns: updateInfo.columns,
-            totalMines: updateInfo.totalMines,
-            setSupermanMode : updateInfo.setSupermanMode
-        });
-    }
-
-    updateUserChoice(updateInfo){
-        this.setState({
-            reset : updateInfo.reset || false,
-            leftFlags: updateInfo.leftFlags
-        });
+    update(data){
+        if(data.action === ACTIONS.RESET){
+            this.setState({
+                superman: false,
+                leftFlags: this.state.totalMines,
+                action: ACTIONS.NEW_GAME
+            });
+        }
+        if(data.action === ACTIONS.NEW_GAME){
+            this.setState({
+                rows: data.rows,
+                columns: data.columns,
+                totalMines: data.totalMines,
+                leftFlags: data.totalMines,
+                superman : false,
+                action: ACTIONS.NEW_GAME
+            });
+        }
+        if(data.action === ACTIONS.SUPERMAN){
+            this.setState({
+                action: ACTIONS.SUPERMAN,
+                superman: !this.state.superman
+            });
+        }
+        if(data.action === ACTIONS.FLAG_CHANGE){
+            this.setState({
+                action: ACTIONS.FLAG_CHANGE,
+                leftFlags: data.leftFlags
+            });
+        }
     }
 
   render() {
@@ -46,11 +65,11 @@ class App extends Component {
           <h1 className="App-title"></h1>
         </header>
           <div className="widget-body">
-              <UserChoice rows={this.state.rows} columns={this.state.columns} totalMines={this.state.totalMines} leftFlags={this.state.leftFlags}
-                          superman={this.state.setSupermanMode} reset={this.state.reset} updateBoard={this.updateBoard}/>
+              <UserChoice rows={this.state.rows} columns={this.state.columns} totalMines={this.state.totalMines}
+                          leftFlags={this.state.leftFlags} action={this.state.action} update={this.update}/>
               <div className="board-container">
                   <Board rows={this.state.rows} columns={this.state.columns} totalMines={this.state.totalMines}
-                         setSupermanMode={this.state.setSupermanMode} updateUserChoice={this.updateUserChoice}/>
+                         superman={this.state.superman} action={this.state.action} update={this.update}/>
               </div>
           </div>
       </div>

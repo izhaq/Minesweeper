@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types'
-import './User-choice.scss'
+import PropTypes from 'prop-types';
+import {ACTIONS, MESSAGES} from '../../modal/Constants';
+import './user-choice.scss'
 
 
 class UserChoice extends Component {
@@ -10,64 +11,47 @@ class UserChoice extends Component {
             rows: props.rows,
             columns: props.columns,
             totalMines: props.totalMines,
-            superman: props.superman,
-            leftFlags: props.leftFlags
+            superman: false
         }
 
-        this.handleRowChange = this.handleRowChange.bind(this);
-        this.handleColumnsChange = this.handleColumnsChange.bind(this);
-        this.handleMinesChange = this.handleMinesChange.bind(this);
-        this.notifyListeners = this.notifyListeners.bind(this);
-        this.handleSupermanMode = this.handleSupermanMode.bind(this);
+        this.updateUserInput = this.updateUserInput.bind(this);
+        this.newGame = this.newGame.bind(this);
+        this.handleSuperman = this.handleSuperman.bind(this);
 
     }
 
     componentWillReceiveProps(nextProps){
-        if(nextProps.reset){this.resetSelection();}
-        if(nextProps.leftFlags){}
+        if(nextProps.action === ACTIONS.NEW_GAME){
+            this.resetSuperman();
+        }
     }
 
-    resetSelection(){
+    resetSuperman(){
         this.setState({
-            superman: false,
-            leftFlags: this.state.totalMines
+            superman: false
         })
     }
 
-    notifyListeners(){
-        if(this.maxNumberOfMinesExceeded(this.state.rows, this.state.columns, this.state.totalMines)){
-            alert("maximum number of mines exceeded !");
-        }else{
-            this.resetSelection();
-            this.props.updateBoard({rows: this.state.rows, columns: this.state.columns, totalMines: this.state.totalMines});
+    newGame(){
+        if(this.maxNumberOfMinesExceeded()){alert(MESSAGES.MAX_MINE_EXCEEDED);}
+        else{
+            this.resetSuperman();
+            this.props.update({rows: this.state.rows, columns: this.state.columns, totalMines: this.state.totalMines, action: ACTIONS.NEW_GAME});
         }
     }
 
 
-    handleSupermanMode(){
+    handleSuperman(){
         this.setState({superman: !this.state.superman},()=>{
-            this.props.updateBoard({setSupermanMode: true});
+            this.props.update({action: ACTIONS.SUPERMAN});
         });
 
     }
 
-    handleRowChange(e){
-        let rows = e.target.value;
-        this.setState({rows: rows});
-    }
-
-    handleColumnsChange(e){
-        let column = e.target.value;
-        this.setState({columns: column});
-    }
-
-    handleMinesChange(e){
-        let mines = e.target.value;
-        this.setState({
-            totalMines: mines,
-            leftFlags: mines
-        });
-
+    updateUserInput(prop, e){
+        let newState = {};
+        newState[prop] = e.target.value;
+        this.setState(newState);
     }
 
     maxNumberOfMinesExceeded(){
@@ -78,26 +62,26 @@ class UserChoice extends Component {
         return (
             <div className="User-choice">
                 <div className="superman-mode">
-                    <input onChange={this.handleSupermanMode} id="superman" type="checkbox" checked={this.state.superman} />
+                    <input onChange={this.handleSuperman} id="superman" type="checkbox" checked={this.state.superman} />
                     <label htmlFor="superman">Superman</label>
                 </div>
                 <div className="row-choice">
                     <span className="choice-desc">Rows</span>
-                    <input className="user-input" type="text" value={this.state.rows} onChange={this.handleRowChange} />
+                    <input className="user-input" type="text" value={this.state.rows} onChange={(e)=>{this.updateUserInput("rows", e)}} />
                 </div>
                 <div className="column-choice">
                     <span className="choice-desc">Columns</span>
-                    <input className="user-input" type="text" value={this.state.columns} onChange={this.handleColumnsChange}/>
+                    <input className="user-input" type="text" value={this.state.columns} onChange={(e)=>{this.updateUserInput("columns", e)}}/>
                 </div>
                 <div className="mine-choice">
                     <span className="choice-desc">Mines</span>
-                    <input className="user-input" type="text" value={this.state.totalMines} onChange={this.handleMinesChange}/>
+                    <input className="user-input" type="text" value={this.state.totalMines} onChange={(e)=>{this.updateUserInput("totalMines", e)}}/>
                 </div>
                 <div className="flag-left">
-                    <span className="choice-desc">Left flags: {this.state.leftFlags}</span>
+                    <span className="choice-desc">Left flags: {this.props.leftFlags}</span>
                 </div>
                 <div className="reset-container">
-                    <button onClick={this.notifyListeners}>
+                    <button onClick={this.newGame}>
                         New Game
                     </button>
                 </div>

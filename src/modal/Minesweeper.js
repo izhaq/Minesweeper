@@ -1,5 +1,6 @@
 import CellInfo from './CellInfo';
-import GameState from './GameStateInfo'
+import GameState from './GameStateInfo';
+import {MESSAGES} from './Constants';
 
 
 
@@ -48,9 +49,9 @@ class Minesweeper {
     }
 
     setGameState(gameState){
-        gameState.totalMines = this.totalMines;
-        gameState.leftFlags  = this.leftFlags();
         this.gameState = new GameState(gameState);
+        this.gameState.totalMines = this.totalMines;
+        this.gameState.leftFlags  = this.leftFlags();
     }
 
     getGameState(){
@@ -65,6 +66,7 @@ class Minesweeper {
         this.totalFlags = 0;
         this.successfullFlag = 0;
         this.totalOpenCellsWithoutMins = 0
+        this.mineOpend = false;
     }
 
      setFlagOnBoard(row, col, flag){
@@ -84,7 +86,7 @@ class Minesweeper {
 
      addFlagWhenAllFlagsAlreadyUsed(row, col){
          if(!this.board[row][col].hasFlag && this.totalFlags === this.totalMines){
-             this.setGameState({actionSuccess: false, stateDesc: "All flags already used !"});
+             this.setGameState({actionSuccess: false, stateDesc: MESSAGES.ALL_FLAGS_ALREADY_USED});
              return true;
          }
          return false;
@@ -106,7 +108,7 @@ class Minesweeper {
          this.totalFlags++;
          this.successfullFlag += this.bombStack[row] && this.bombStack[row][col]  ? 1: 0;
          if(this.gameOver()){
-             this.setGameState({actionSuccess: true, state: [this.board[row][col]], gameOver: true, stateDesc: "you won !"});
+             this.setGameState({actionSuccess: true, state: [this.board[row][col]], gameOver: true, stateDesc: MESSAGES.WIN});
          }else{this.setGameState({actionSuccess: true, state: [this.board[row][col]], gameOver: false});}
 
          return true;
@@ -132,7 +134,7 @@ class Minesweeper {
          if(this.board[row][col].hasMine){
              this.board[row][col].isOpen = true;
              this.mineOpend = true
-             this.setGameState({actionSuccess: true, state: [this.board[row][col]], gameOver: true, stateDesc: "you lose !"});
+             this.setGameState({actionSuccess: true, state: [this.board[row][col]], gameOver: true, stateDesc: MESSAGES.LOSE});
              return true;
          }
          return false;
@@ -142,7 +144,7 @@ class Minesweeper {
          if(this.board[row][col].suicideNeighbors > 0){
              this.board[row][col].isOpen = true;
              this.totalOpenCellsWithoutMins++;
-             this.setGameState({actionSuccess: true, state: [this.board[row][col]], gameOver: this.isGameOver(), stateDesc: "you win !"});
+             this.setGameState({actionSuccess: true, state: [this.board[row][col]], gameOver: this.isGameOver(), stateDesc: MESSAGES.WIN});
 
              return true;
          }
@@ -158,7 +160,7 @@ class Minesweeper {
          }
 
          if(this.allCellsWithoutMinesAreOpend()) {
-             this.setGameState({actionSuccess: true, state: this.board, gameOver: true, stateDesc: "you won !"})
+             this.setGameState({actionSuccess: true, state: this.board, gameOver: true, stateDesc: MESSAGES.WIN})
          }else{this.setGameState({actionSuccess: true, state: this.board, gameOver: false});}
     }
 
@@ -266,6 +268,10 @@ class Minesweeper {
 
      isGameOver(){
         return  this.totalOpenCellsWithoutMins === ((this.board.length * this.board[0].length) - this.totalMines)
+     }
+
+     setBombStack(bombStack){
+        this.bombStack = bombStack;
      }
  }
 

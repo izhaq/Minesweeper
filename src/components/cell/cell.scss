@@ -14,6 +14,7 @@
         border-right: 1px solid #222;
         border-radius: 10px;
         font-size: 12px;
+        cursor: pointer;
 
         &.superman{
             background-color: red;
@@ -22,6 +23,7 @@
         &.open-cell {
             background-color: white;
             color: #61dafb;
+            cursor: auto;
 
             &.mine-cell {
                 background-color: red;
@@ -59,6 +61,10 @@
             &.flag-cell{
                 background-color: green;
             }
+        }
+
+        &.close-cell:hover{
+            background-color: lightgray;
         }
     }
 

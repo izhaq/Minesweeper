@@ -75,6 +75,8 @@ class Minesweeper {
 
         if(this.addFlagWhenAllFlagsAlreadyUsed(row, col)){return true;}
 
+        if(this.cellIsOpen(row, col)){return true;}
+
         if(this.removeFlag(row, col)){return true;}
 
         return this.addFlag(row, col);
@@ -85,11 +87,21 @@ class Minesweeper {
     }
 
      addFlagWhenAllFlagsAlreadyUsed(row, col){
-         if(!this.board[row][col].hasFlag && this.totalFlags === this.totalMines){
+        const cellDoesntHaveFlag = !this.board[row][col].hasFlag;
+
+         if(cellDoesntHaveFlag && this.allFlagsUsed()){
              this.setGameState({actionSuccess: false, stateDesc: MESSAGES.ALL_FLAGS_ALREADY_USED});
              return true;
          }
          return false;
+     }
+
+    cellIsOpen(row, col){
+         return this.board[row][col].isOpen;
+    }
+
+     allFlagsUsed(){
+         return this.totalFlags === this.totalMines;
      }
 
      removeFlag(row, col){

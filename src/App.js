@@ -24,7 +24,6 @@ class App extends Component {
 
     }
 
-
     update(data){
         if(data.action === ACTIONS.RESET){
             this.setState({

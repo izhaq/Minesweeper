@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import {ACTIONS, MESSAGES} from '../../modal/Constants';
 import './user-choice.scss'
 
@@ -50,8 +49,14 @@ class UserChoice extends Component {
 
     updateUserInput(prop, e){
         let newState = {};
+        if(!this.validIntValue(e.target.value)) {return;}
+
         newState[prop] = e.target.value;
         this.setState(newState);
+    }
+
+    validIntValue(value){
+        return !isNaN(value) && parseInt(value) > 0
     }
 
     maxNumberOfMinesExceeded(){
@@ -89,9 +94,5 @@ class UserChoice extends Component {
         );
     }
 }
-
-UserChoice.propTypes = {
-    notify: PropTypes.func
-};
 
 export default UserChoice;

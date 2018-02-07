@@ -9,5 +9,6 @@ export const MESSAGES = {
     ALL_FLAGS_ALREADY_USED : "All Flags Already Used !",
     WIN: "You Win !",
     LOSE: "You Lose...",
-    MAX_MINE_EXCEEDED: "maximum number of mines exceeded !"
+    MAX_MINE_EXCEEDED: "maximum number of mines exceeded !",
+    NUMBER_MUST_BE_GRATER_THEN_ZERO: "must be grater then zero"
 }

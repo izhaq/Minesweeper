@@ -1,0 +1,75 @@
+.cell-container {
+    background-color: #222;
+    border-bottom: 1px solid #222;
+
+
+    .cell {
+        display: flex;
+        height: 40px;
+        min-width: 40px;
+        justify-content: center;
+        align-items: center;
+        margin: 1px;
+        background-color: #61dafb;
+        border-right: 1px solid #222;
+        border-radius: 10px;
+        font-size: 12px;
+        cursor: pointer;
+
+        &.superman{
+            background-color: red;
+        }
+
+        &.open-cell {
+            background-color: white;
+            color: #61dafb;
+            cursor: auto;
+
+            &.mine-cell {
+                background-color: red;
+            }
+
+            &.mine-near-cell-1{
+                color: red;
+            }
+
+            &.mine-near-cell-2{
+                color: silver;
+            }
+
+            &.mine-near-cell-3{
+                color: gold;
+            }
+
+            &.mine-near-cell-4{
+                color: pink;
+            }
+
+
+            &.mine-near-cell-5{
+                color: brown;
+            }
+
+
+            &.mine-near-cell-6{
+                color: green;
+            }
+        }
+
+        &.close-cell{
+
+            &.flag-cell{
+                background-color: green;
+            }
+        }
+
+        &.close-cell:hover{
+            background-color: lightgray;
+        }
+    }
+
+    .cell:last-child {
+        border-right: none;
+    }
+}
+

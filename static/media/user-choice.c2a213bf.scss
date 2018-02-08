@@ -1,0 +1,64 @@
+.User-choice{
+    display: flex;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background-color: whitesmoke;
+    border: 1px inset;
+
+    .flag-left{
+        padding-left: 10px;
+    }
+
+    .superman-mode{
+        display: flex;
+        align-items: center;
+        padding-right: 15px;
+    }
+
+    .row-choice, .column-choice{
+        padding-right: 10px;
+    }
+
+    .choice-desc{
+        padding-right: 5px;
+    }
+
+    .user-input{
+        padding-left: 4px;
+        width: 40px;
+        height: 10px;
+        font-size: 9px;
+        border-radius: 2px;
+        border: 1px solid #cccccc;
+    }
+
+    .reset-container{
+        padding-left: 15px;
+
+        button{
+            font-size: 10px;
+            border-radius: 1px;
+            border: 1px;
+            color: lightgray;
+            background-color: #222;
+            padding: 3px 13px;
+            cursor: pointer;
+        }
+
+        button:hover{
+            background-color: lightslategray;
+        }
+    }
+
+    .loading-logo{
+        animation: App-logo-spin infinite 20s linear;
+        height: 20px;
+    }
+}
+
+
+

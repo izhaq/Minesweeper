@@ -27,14 +27,6 @@ describe('Cell', () => {
 
         expect(cell.find('.mine-near-cell-5').text()).toBe("5");
     });
-    it('should show open mine', () => {
-        const haveMine = true;
-        const cellInfo = new CellInfo(0, 0, haveMine);
-        cellInfo.isOpen = true;
-        const cell = mount(<Cell cellInfo={cellInfo}></Cell>);
-
-        expect(cell.find('.mine-cell').text()).toBe("Boom !");
-    });
     it('should show close mine', () => {
         const haveMine = true;
         const cellInfo = new CellInfo(0,0, haveMine);

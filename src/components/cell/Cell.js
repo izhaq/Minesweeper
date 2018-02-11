@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import FlagLogo from './flag-camel.svg'
+import MineLogo from './mine.svg'
 import './cell.scss';
 
 
@@ -21,6 +23,7 @@ export default class Cell extends Component {
     }
 
     handleClick(e){
+
         this.props.handleClick(this.state.cellInfo, (cellInfo) => this.openCell(cellInfo), e.shiftKey);
     }
 
@@ -46,9 +49,13 @@ export default class Cell extends Component {
     }
 
     render(){
+        const flagLogo = this.state.cellInfo.hasFlag ? (<img src={FlagLogo} className="flag-logo" alt="flag-logo" />) : null;
+        const mineLogo = this.state.cellInfo.hasMine ? (<img src={MineLogo} className="mine-logo" alt="mine-logo" />) : null;
         return (
             <div className="cell-container">
                 <div className={this.className()} onClick={ this.handleClick } >
+                    {flagLogo}
+                    {mineLogo}
                     {this.cellDescription()}
                 </div>
             </div>

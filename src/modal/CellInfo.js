@@ -13,7 +13,7 @@ export default class CellInfo{
         let description = "";
         if(this.isOpen) {
             if(this.suicideNeighbors){description = this.suicideNeighbors}
-            else if(this.hasMine) {description = "Boom !"}
+            else {description = ""}
         }
 
         return description;

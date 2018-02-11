@@ -1,6 +1,6 @@
 .cell-container {
-    background-color: #222;
-    border-bottom: 1px solid #222;
+    background-color: white;
+    border-bottom: 1px solid white;
 
 
     .cell {
@@ -10,23 +10,39 @@
         justify-content: center;
         align-items: center;
         margin: 1px;
-        background-color: #61dafb;
-        border-right: 1px solid #222;
-        border-radius: 10px;
+        background-color: #d30229;
+        border: 6px outset #d30229;
+        border-radius: 1px;
         font-size: 12px;
         cursor: pointer;
 
+        .flag-logo{
+            display: none;
+        }
+
+        .mine-logo{
+            display: none;
+        }
+
         &.superman{
-            background-color: red;
+            background-color: white;
         }
 
         &.open-cell {
+            border-width: 6px;
+            border-style: inset;
             background-color: white;
+            border-color: white;
             color: #61dafb;
             cursor: auto;
 
+
             &.mine-cell {
-                background-color: red;
+                .mine-logo{
+                    display: block;
+                    height: 35px;
+                    width: 35px;
+                }
             }
 
             &.mine-near-cell-1{
@@ -59,17 +75,22 @@
         &.close-cell{
 
             &.flag-cell{
-                background-color: green;
+                background-color: white;
+                .flag-logo{
+                    display: block;
+                    height: 35px;
+                    width: 35px;
+                }
             }
         }
 
         &.close-cell:hover{
-            background-color: lightgray;
+            background-color: lightcoral;
         }
     }
 
-    .cell:last-child {
+    /*.cell:last-child {
         border-right: none;
-    }
+    }*/
 }
 

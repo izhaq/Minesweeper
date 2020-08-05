@@ -53,7 +53,8 @@
     "build": "node scripts/build.js",
     "test": "node scripts/test.js --env=jsdom",
 	"deploy": "gh-pages -d build",
-	"predeploy": "npm run build" 
+	"predeploy": "npm run build" ,
+    "prod": "node scripts/build.js"
   },
   "jest": {
     "collectCoverageFrom": [
